@@ -1,12 +1,20 @@
 const character = document.getElementById("character");
 const coin = document.getElementById("coin");
+const helpBtn = document.getElementById("help");
+
+const gameContainer = document.getElementById("game-container");
+const scoreContainer = document.getElementById("score-container");
+
+helpBtn.addEventListener("click", () => {
+  alert(
+    "Use WASD or arrow keys to move the ghost around to collect as much coins as possible to score points. Each coin worth 2 points"
+  );
+});
+
 let score = 0;
 let highestScore = localStorage.getItem("highestScore") || 0;
 let timeRemaining = 30;
 let timerInterval;
-
-const gameContainer = document.getElementById("game-container");
-const scoreContainer = document.getElementById("score-container");
 
 document.addEventListener("keydown", (event) => {
   const characterRect = character.getBoundingClientRect();
@@ -17,33 +25,35 @@ document.addEventListener("keydown", (event) => {
     width: characterWidth,
     height: characterHeight,
   } = characterRect;
-  const { width: containerWidth, height: containerHeight } = containerRect;
-
-  characterX <= containerRect.left;
-  characterY <= containerRect.top;
+  const {
+    left: containerLeft,
+    top: containerTop,
+    width: containerWidth,
+    height: containerHeight,
+  } = containerRect;
 
   switch (event.key) {
     case "ArrowUp":
     case "w":
-      if (characterY > 0) {
+      if (characterY - characterHeight > containerTop) {
         character.style.top = `${characterY - characterHeight}px`;
       }
       break;
     case "ArrowDown":
     case "s":
-      if (characterY + characterHeight < containerHeight) {
+      if (characterY + characterHeight < containerTop + containerHeight) {
         character.style.top = `${characterY + characterHeight}px`;
       }
       break;
     case "ArrowLeft":
     case "a":
-      if (characterX > 0) {
+      if (characterX - characterWidth > containerLeft) {
         character.style.left = `${characterX - characterWidth}px`;
       }
       break;
     case "ArrowRight":
     case "d":
-      if (characterX + characterWidth < containerWidth) {
+      if (characterX + characterWidth < containerLeft + containerWidth) {
         character.style.left = `${characterX + characterWidth}px`;
       }
       break;
@@ -75,8 +85,27 @@ function collectCoin() {
   updateScore();
 
   const newPosition = getRandomPosition();
-  coin.style.top = `${newPosition[1]}px`;
-  coin.style.left = `${newPosition[0]}px`;
+  const { left: coinLeft, top: coinTop } = newPosition;
+  const containerRect = gameContainer.getBoundingClientRect();
+  const {
+    left: containerLeft,
+    top: containerTop,
+    width: containerWidth,
+    height: containerHeight,
+  } = containerRect;
+  const { width: coinWidth, height: coinHeight } = coin.getBoundingClientRect();
+
+  if (
+    coinLeft >= containerLeft &&
+    coinLeft + coinWidth <= containerLeft + containerWidth &&
+    coinTop >= containerTop &&
+    coinTop + coinHeight <= containerTop + containerHeight
+  ) {
+    coin.style.top = `${coinTop}px`;
+    coin.style.left = `${coinLeft}px`;
+  } else {
+    collectCoin();
+  }
 }
 
 function checkCollision(rect1, rect2) {
@@ -102,7 +131,7 @@ function getRandomPosition() {
   const randomX = Math.floor(Math.random() * maxX);
   const randomY = Math.floor(Math.random() * maxY);
 
-  return [randomX, randomY];
+  return { left: randomX, top: randomY };
 }
 
 function updateTimer() {
@@ -125,18 +154,15 @@ function endGame() {
   clearInterval(timerInterval);
   alert("Time's up!");
 
-  // Reset score, time, and positions
   score = 0;
   timeRemaining = 30;
   updateScore();
   updateTimer();
 
-  // Reset coin position
   const coinPosition = getRandomPosition();
-  coin.style.top = `${coinPosition[1]}px`;
-  coin.style.left = `${coinPosition[0]}px`;
+  coin.style.top = `${coinPosition.top}px`;
+  coin.style.left = `${coinPosition.left}px`;
 
-  // Reset character position
   const containerRect = gameContainer.getBoundingClientRect();
   const characterX = containerRect.width / 2 - character.offsetWidth / 2;
   const characterY = containerRect.height / 2 - character.offsetHeight / 2;
@@ -144,7 +170,6 @@ function endGame() {
 }
 
 function initGame() {
-  // Adjust score container width to match game area
   scoreContainer.style.width = `${gameContainer.offsetWidth}px`;
 
   startTimer();
