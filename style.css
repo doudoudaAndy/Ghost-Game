@@ -62,8 +62,8 @@ h1 {
 
 #coin {
   position: absolute;
-  top: 400px;
-  left: 400px;
+  display: flex;
+  justify-content: center;
   width: 30px;
   height: 30px;
 }
