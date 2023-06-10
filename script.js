@@ -5,6 +5,9 @@ const helpBtn = document.getElementById("help");
 const gameContainer = document.getElementById("game-container");
 const scoreContainer = document.getElementById("score-container");
 
+//TODO: Slove the problem of score
+//TODO: Slove problem of the character and coin resteting out of the gaming area
+
 helpBtn.addEventListener("click", () => {
   alert(
     "Use WASD or arrow keys to move the ghost around to collect as much coins as possible to score points. Each coin worth 2 points"
@@ -159,14 +162,8 @@ function endGame() {
   updateScore();
   updateTimer();
 
-  const coinPosition = getRandomPosition();
-  coin.style.top = `${coinPosition.top}px`;
-  coin.style.left = `${coinPosition.left}px`;
-
-  const containerRect = gameContainer.getBoundingClientRect();
-  const characterX = containerRect.width / 2 - character.offsetWidth / 2;
-  const characterY = containerRect.height / 2 - character.offsetHeight / 2;
-  character.style.transform = `translate(${characterX}px, ${characterY}px)`;
+  character.style.top = "50%";
+  character.style.left = "50%";
 }
 
 function initGame() {
