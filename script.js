@@ -6,7 +6,6 @@ const gameContainer = document.getElementById("game-container");
 const scoreContainer = document.getElementById("score-container");
 
 //TODO: Slove the problem of score
-//TODO: Slove problem of the character and coin resteting out of the gaming area
 
 helpBtn.addEventListener("click", () => {
   alert(
